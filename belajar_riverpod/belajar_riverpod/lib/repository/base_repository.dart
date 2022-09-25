@@ -42,7 +42,7 @@ abstract class BaseRepository {
     }
   }
 
-  Future<Map<String, dynamic>> get ({
+  Future<dynamic> get ({
     required String service
   }) async {
     try {
@@ -60,12 +60,16 @@ abstract class BaseRepository {
         throw BaseRepositoryException(message: "invalid Http Response ${response.statusCode}");
       }
 
-      Map<String, dynamic> jsonData = jsonDecode(response.data);
+      // Map<String, dynamic> jsonData = json.decode(response.data);
 
-      if(jsonData['status'] != "OK"){
-        throw BaseRepositoryException(message:jsonData['message']);
+      if(response.data['status'] != "OK"){
+        throw BaseRepositoryException(message:response.data['message']);
       }else{
-        return jsonData;
+        if(response.data['status'] == 'OK'){
+          return response.data['data'];
+        }else{
+          throw BaseRepositoryException(message:response.data['message']);
+        }
       }
     } on DioError catch (e) {
       throw BaseRepositoryException(message: e.message);

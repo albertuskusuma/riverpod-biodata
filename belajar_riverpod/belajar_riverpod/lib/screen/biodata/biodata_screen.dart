@@ -58,37 +58,37 @@ class BiodataScreen extends HookConsumerWidget {
                     itemCount: listBiodataResult.value.length,
                     itemBuilder: (context, index) {
                       print(listBiodataResult);
-                      return Text('${listBiodataResult.value}');
+                      return Text('${listBiodataResult.value[0].nama}');
                       // return Text('sassa');
                     }),
               ),
-              SizedBox(
-                width: 100,
-                height: 100,
-                child: FutureBuilder<List<BiodataModel>>(
-                  // future: BiodataRepository(dio: ref.read(dioProvider)).load(),
-                  future : BiodataRepository(dio: ref.read(dioProvider)).getData(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      if (snapshot.hasError) {
-                        return Center(
-                          child: Text(
-                            '${snapshot.error} occurred',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        );
-                      }else if(snapshot.hasData){
-                        // final data = snapshot.data as String;
-                        print('masuk');
-                        return Center(
-                          child: Text('${snapshot.data?[0].nama}'),
-                        );
-                      }
-                    }
-                    return Text('hallo');
-                  },
-                ),
-              )
+              // SizedBox(
+              //   width: 100,
+              //   height: 100,
+              //   child: FutureBuilder<List<BiodataModel>>(
+              //     future: BiodataRepository(dio: ref.read(dioProvider)).load(),
+              //     // future : BiodataRepository(dio: ref.read(dioProvider)).getData(),
+              //     builder: (context, snapshot) {
+              //       if (snapshot.connectionState == ConnectionState.done) {
+              //         if (snapshot.hasError) {
+              //           return Center(
+              //             child: Text(
+              //               '${snapshot.error} occurred',
+              //               style: TextStyle(fontSize: 18),
+              //             ),
+              //           );
+              //         }else if(snapshot.hasData){
+              //           // final data = snapshot.data as String;
+              //           print('masuk');
+              //           return Center(
+              //             child: Text('${snapshot.data?[0].nama}'),
+              //           );
+              //         }
+              //       }
+              //       return Text('hallo');
+              //     },
+              //   ),
+              // )
             ],
           ),
         ),

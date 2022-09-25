@@ -7,27 +7,23 @@ class BiodataRepository extends BaseRepository {
   BiodataRepository({required super.dio});
 
   Future<List<BiodataModel>> load() async {
-    final service = "http://192.168.70.6:999/restapi/index.php/belajarbiodata/list_biodata";
-    final resp = await get(service: service);
-    // final result = List<BiodataModel>.empty(growable: true);
+    // final service = "http://192.168.70.6:999/restapi/index.php/belajarbiodata/list_biodata";
+    final service = "http://localhost/restapi/index.php/belajarbiodata/list_biodata";
+    final param = {
+      "nama":"nama"
+    };
+    var resp = await get(service: service) as List<dynamic>;
 
-    final result = List<BiodataModel>.empty(growable: true);
-
-    resp["data"].forEach((key) {
-      result.add(BiodataModel.fromJson(key));
-    });
-
-    // return list<BiodataModel>;
-    // resp.forEach((key, value) {
-    //   final model = BiodataModel.fromJson(value);
-    // });
-
-    // return result;
+    final List<BiodataModel> result = List.empty(growable: true);
+     for (final e in resp) {
+      result.add(BiodataModel.fromJson(e));
+    }
     return result;
   }
 
   Future<List<BiodataModel>> getData() async {
-    String apiURL = "http://192.168.70.6:999/restapi/index.php/belajarbiodata/list_biodata";
+    // String apiURL = "http://192.168.70.6:999/restapi/index.php/belajarbiodata/list_biodata";
+     final apiURL = "http://localhost/restapi/index.php/belajarbiodata/list_biodata";
 
     var apiResult = await http.post(Uri.parse(apiURL));
     if(apiResult.statusCode == 200){
