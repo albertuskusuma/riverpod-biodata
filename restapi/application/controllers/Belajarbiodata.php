@@ -7,11 +7,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     header('Access-Control-Allow-Headers: token, Content-Type');
     header('Access-Control-Max-Age: 1728000');
     header('Content-Length: 0');
-    header('Content-Type: text/plain');
+    header('Content-Type: application/json');
     die();
 }
 
 header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, GET, DELETE, PUT, PATCH, OPTIONS');
+header('Access-Control-Allow-Headers: token, Content-Type');
+header('Access-Control-Max-Age: 1728000');
+header('Content-Length: 0');
 header('Content-Type: application/json');
 
 
@@ -41,13 +45,13 @@ class Belajarbiodata extends CI_Controller {
         if($data->num_rows() > 0){
             echo json_encode(array(
                 'status'=>"OK",
-                'data'=>$data->result_array(),
+                'data'=> $data->result_array(),
                 'message'=>'Data Ada'
             ));
         }else{
             echo json_encode(array(
                 'status'=>"ERR",
-                'data'=>[],
+                'data'=> [],
                 'message'=>'Data Tidak Ada'
             ));
         }
@@ -55,14 +59,15 @@ class Belajarbiodata extends CI_Controller {
 
     public function add_biodata()
     {
-        $nama = $_POST['nama'];
-        $umur = $_POST['umur'];
-        $jenis_kelamin = $_POST['jenis_kelamin'];
-        $alamat = $_POST['alamat'];
-        $hobi = $_POST['hobi'];
+        $obj = json_decode(file_get_contents('php://input'), true);
+        $nama = $obj['nama'];
+        $umur = $obj['umur'];
+        // $jenis_kelamin = $_POST['jenis_kelamin'];
+        // $alamat = $_POST['alamat'];
+        // $hobi = $_POST['hobi'];
 
-        $sql = "INSERT INTO belajar_biodata(nama, umur, jenis_kelamin, alamat, hobi, is_delete) VALUES(
-            '$nama','$umur','$jenis_kelamin','$alamat','$hobi',0)
+        $sql = "INSERT INTO belajar_biodata(nama, umur) VALUES(
+            '$nama','$umur')
         )";
 
         $i = $this->db->query($sql);
@@ -79,6 +84,37 @@ class Belajarbiodata extends CI_Controller {
                 'status'=>"ERR",
                 'data'=>[],
                 'message'=>'gagal insert'
+            ));
+        }
+    }
+
+    public function edit_biodata()
+    {
+        $obj = json_decode(file_get_contents('php://input'), true);
+
+        $id_biodata = $obj['id'];
+        $nama = $obj['nama'];
+        $umur = $obj['umur'];
+
+        $sql_u = "UPDATE belajar_biodata SET 
+        nama = '$nama',
+        umur = '$umur'
+        WHERE id_biodata = '$id_biodata'";
+        $u = $this->db->query($sql_u);
+
+        if($u){
+            $sql_select = "select * from belajar_biodata where is_delete = 0";
+            $data = $this->db->query($sql_select);
+            echo json_encode(array(
+                'status'=>"OK",
+                'data'=>$data->result_array(),
+                'message'=>'Data Berhasil di Update'
+            ));
+        }else{
+            echo json_encode(array(
+                'status'=>"ERR",
+                'data'=>[],
+                'message'=>'gagal update'
             ));
         }
     }

@@ -8,43 +8,52 @@ class BiodataRepository extends BaseRepository {
 
   Future<List<BiodataModel>> load() async {
     final service = "http://192.168.70.6:999/restapi/index.php/belajarbiodata/list_biodata";
-    final resp = await get(service: service);
-    // final result = List<BiodataModel>.empty(growable: true);
+    final resp = await get(service: service) as List<dynamic>;
 
     final result = List<BiodataModel>.empty(growable: true);
+    for(final e in resp){
+      result.add(BiodataModel.fromJson(e));
+    }
 
-    resp["data"].forEach((key) {
-      result.add(BiodataModel.fromJson(key));
-    });
-
-    // return list<BiodataModel>;
-    // resp.forEach((key, value) {
-    //   final model = BiodataModel.fromJson(value);
-    // });
-
-    // return result;
     return result;
   }
 
-  Future<List<BiodataModel>> getData() async {
-    String apiURL = "http://192.168.70.6:999/restapi/index.php/belajarbiodata/list_biodata";
+  Future<List<BiodataModel>> addBiodata(String nama, String umur) async {
 
-    var apiResult = await http.post(Uri.parse(apiURL));
-    if(apiResult.statusCode == 200){
+    var param = {
+      "nama" : nama,
+      "umur" : umur
+    };
 
-      var jsonObject = json.decode(apiResult.body);
-      List<dynamic> list = (jsonObject as Map<String, dynamic>)['data'];
+    print(param);
 
-      List<BiodataModel> listpush = [];
+    final service = "http://192.168.70.6:999/restapi/index.php/belajarbiodata/add_biodata";
 
-      for(int i=0; i < list.length; i++){
-        listpush.add(BiodataModel.fromJson(list[i]));
-      }
+    final response = await post(service: service,param: param);
 
-      return listpush;
+    final result = List<BiodataModel>.empty(growable:true);
+    for(final e in response){
+      result.add(BiodataModel.fromJson(e));      
     }
-    else{
-      return [];
-    }
+
+    return result;
   }
+
+  Future<List<BiodataModel>> editBiodata(String id, String nama, String umur) async {
+    var param = {
+      "id" : id,
+      "nama" : nama,
+      "umur" : umur
+    };
+
+    final service = "http://192.168.70.6:999/restapi/index.php/belajarbiodata/edit_biodata";
+    final response = await post(service: service, param: param);
+    final result = List<BiodataModel>.empty(growable: true);
+    for(final e in response){
+      result.add(BiodataModel.fromJson(e));
+    }
+
+    return result;
+  } 
+
 }

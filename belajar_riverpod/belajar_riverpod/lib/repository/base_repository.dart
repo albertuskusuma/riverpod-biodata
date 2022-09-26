@@ -8,71 +8,49 @@ abstract class BaseRepository {
 
   BaseRepository({required this.dio});
 
-  Future<Map<String, dynamic>> post({
-    required Map<String, dynamic> param,
-    required String service
+  // post
+  Future<dynamic> post({
+    required String service,
+    required Map<String, dynamic> param
   }) async {
-    try {
-      final response = await dio.post(
-        service,
-        data: jsonEncode(param),
-        options: Options(
-          headers:{
-            HttpHeaders.contentTypeHeader: "application/json",
-          },
-          contentType: "application/json"
-        )
-      );
-      if(response.statusCode != 200){
-        throw BaseRepositoryException(message: "Invalid HTTP Response ${response.statusCode}");
-      }
+    final response = await dio.post(service, data: jsonEncode(param), options:Options(
+      headers: {
+        HttpHeaders.contentTypeHeader : "application/json"
+      },
+      contentType: "application/json",
+    ));
 
-      Map<String, dynamic> jsonData = jsonDecode(response.data);
-      if(jsonData['status'] != "OK"){
-        throw BaseRepositoryException(message: jsonData['message']);
+    if(response.statusCode != 200) {
+      throw BaseRepositoryException(message:"Invalid status code ${response.statusCode}");
+    }else{
+      if(response.data['status'] == 'OK'){
+        return response.data['data'];
       }else{
-        return jsonData;
+        throw BaseRepositoryException(message: response.data['message']);
       }
-    } on DioError catch (e) {
-      throw BaseRepositoryException(message: e.message);
-    } on SocketException catch (e) {
-      throw BaseRepositoryException(message: e.message);
-    } on BaseRepositoryException catch (e) {
-      throw BaseRepositoryException(message: e.message);
     }
   }
 
-  Future<Map<String, dynamic>> get ({
+  // get
+  Future<dynamic> get({
     required String service
   }) async {
-    try {
-      final response = await dio.get(
-        service,
-        options: Options(
-          headers: {
-            HttpHeaders.contentTypeHeader: "application/json",
-          },
-          contentType: "application/json"
-        )
-      );
+   
+    final response = await dio.get(service, options: Options(
+      headers: {
+        HttpHeaders.contentTypeHeader: "application/json",
+      },
+      contentType: "application/json"
+    ));
 
-      if(response.statusCode != 200){
-        throw BaseRepositoryException(message: "invalid Http Response ${response.statusCode}");
-      }
+    if(response.statusCode != 200){
+      throw BaseRepositoryException(message: "invalid status code: ${response.statusCode}");
+    }
 
-      Map<String, dynamic> jsonData = jsonDecode(response.data);
-
-      if(jsonData['status'] != "OK"){
-        throw BaseRepositoryException(message:jsonData['message']);
-      }else{
-        return jsonData;
-      }
-    } on DioError catch (e) {
-      throw BaseRepositoryException(message: e.message);
-    } on SocketException catch (e) {
-      throw BaseRepositoryException(message: e.message);
-    } on BaseRepositoryException catch (e) {
-      throw BaseRepositoryException(message: e.message);
+    if(response.data['status'] != 'OK'){
+      throw BaseRepositoryException(message: response.data['message']);
+    }else{
+      return response.data['data'];
     }
   }
 }

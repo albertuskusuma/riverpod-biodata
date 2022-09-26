@@ -34,6 +34,38 @@ class BiodataStateNotifier extends StateNotifier<BiodataLoadState>{
       }
     }
   }
+
+  void editBiodata(String id, String nama, String umur)async {
+    final dio = ref.read(dioProvider);
+
+    try {
+      state = BiodataLoadStateLoading();
+      final resp = await BiodataRepository(dio: dio).editBiodata(id, nama, umur);
+      state = BiodataLoadStateDone(model: resp);
+       } catch (e) {
+      if(e is BaseRepositoryException) {
+        state = BiodataLoadStateError(message: e.message);
+      }else{
+        state = BiodataLoadStateError(message: e.toString());
+      }
+    }
+  }
+
+  void addBiodata(String nama, String umur) async {
+    final dio = ref.read(dioProvider);
+    try {
+      state = BiodataLoadStateLoading();
+      final resp = await BiodataRepository(dio: dio).addBiodata(nama, umur);
+      state = BiodataLoadStateDone(model: resp);
+    } catch (e) {
+      if(e is BaseRepositoryException){
+        state = BiodataLoadStateError(message: e.message);
+      }else{
+        state = BiodataLoadStateError(message: e.toString());
+      }
+    }
+   
+  }
 }
 
 // state
